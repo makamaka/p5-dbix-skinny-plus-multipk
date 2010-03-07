@@ -1,0 +1,63 @@
+DBIx::Skinny::Plus::MultiPK version 0.01
+========================
+
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+NAME
+    DBIx::Skinnyy::Plus::MultiPK - multi primary key acceptable
+
+SYNOPSIS
+        package Your::Model::Schema;
+    
+        install_table 'a_multi_pk_table' => schema {
+            pk [ qw( id_a id_b ) ]; # set an array reference
+            columns qw( id_a id_b etc );
+        };
+    
+        #
+        pakcage Your::Model;
+        use DBIx::Skinny setup => +{
+            dsn => 'dbi:SQLite:',
+            username => '',
+            password => '',
+        };
+        use DBIx::Skinny::Schema::Plus::MultiPK;
+    
+        # ...
+    
+        package main;
+    
+        use Your::Model;
+    
+        my $row = Your::Model->single( 'a_multi_pk_table', { id_a => 'a', id_b => 'b' } );
+        $row->update( { etc => 'foobar' } );
+        $row->delete();
+
+DESCRIPTION
+    DBIx::Skinny assumes single primary key schemas. Using this module
+    enable you to set multi primary kyes.
+
+    Use this module after "use DBIx::Skinny" in your model class.
+
+    Then in your schema class, only pass an array reference of primary keys
+    to "pk".
+
+SEE ALSO
+    DBIx::Skinny
+
+AUTHOR
+    Makamaka Hannyaharamitu, <makamaka[at]cpan.org>
+
+COPYRIGHT AND LICENSE
+    Copyright 2010 by Makamaka Hannyaharamitu
+
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
