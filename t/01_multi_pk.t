@@ -14,7 +14,7 @@ use Data::Dumper;
 
 my $skinny = Mock::MultiPK->new;
 
-subtest 'insert data' => sub {
+subtest 'init data' => sub {
     $skinny->setup_test_db;
 
     $skinny->insert( 'a_multi_pk_table', { id_a => 1, id_b => 1 } );
@@ -36,7 +36,7 @@ subtest 'insert data' => sub {
 
 my ( $itr, $a_multi_pk_table );
 
-subtest 'multi pk' => sub {
+subtest 'multi pk search' => sub {
     $itr = $skinny->search( 'a_multi_pk_table', { id_a => 1 } );
     is( $itr->count, 3, 'first - user has 3 books' );
 
@@ -66,6 +66,7 @@ subtest 'multi pk' => sub {
     done_testing();
 };
 
+
 subtest 'multi pk search_by_sql' => sub {
     my ( $itr, $row );
 
@@ -80,6 +81,27 @@ subtest 'multi pk search_by_sql' => sub {
     $row = $skinny->search_by_sql(q{SELECT * FROM a_multi_pk_table WHERE id_a = ? AND id_b = ?}, [3, 10])->first;
 
     is( $row->memo, 'hoge' );
+
+    done_testing();
+};
+
+
+subtest 'multi pk row insert' => sub {
+    my ( $rs, $itr, $row );
+
+    $row = $skinny->insert( 'a_multi_pk_table', { id_a => 3, id_b => 40 } );
+
+    is_deeply( $row->get_columns, { id_a => 3, id_b => 40 } );
+
+    $row->insert(); # find_or_create => find
+
+    $itr = $skinny->search( 'a_multi_pk_table', { id_a => 3 } );
+    is( $itr->count, 4 );
+
+    $row->delete();
+
+    $itr = $skinny->search( 'a_multi_pk_table', { id_a => 3 } );
+    is( $itr->count, 3 );
 
     done_testing();
 };

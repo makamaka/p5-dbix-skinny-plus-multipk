@@ -9,10 +9,8 @@ our $VERSION = '0.01';
 
 
 BEGIN {
-    local $^W;
-    no warnings;
 
-    sub DBIx::Skinny::Row::_update_or_delete_cond {
+    sub _update_or_delete_cond { # copied from original DBIx::Skinny::Row::_update_or_delete_cond
         my ($self, $table) = @_;
 
         unless ($table) {
@@ -47,6 +45,24 @@ BEGIN {
 
         return +{ $pk => $self->$pk };
     }
+
+
+    sub get_columns {
+        my $self = shift;
+        my %data;
+        for my $col ( @{$self->{select_columns}} ) {
+            next if $col =~ /^ARRAY\(/;
+            $data{$col} = $self->get_column($col);
+        }
+        return \%data;
+    }
+
+
+    local $^W;
+    no warnings;
+
+    *DBIx::Skinny::Row::_update_or_delete_cond = \&_update_or_delete_cond;
+    *DBIx::Skinny::Row::get_columns            = \&get_columns;
 
 }
 
